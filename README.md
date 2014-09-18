@@ -1,7 +1,7 @@
 Mailbox, homwork submission WK3
 =======
 
-<img src=https://raw.githubusercontent.com/englysh/Mailbox/master/MailboxHW.gif>
+<img src="https://raw.githubusercontent.com/englysh/Mailbox/master/MailboxHW.gif" width:"322pt"; height:"581pt";>
 
 So far took about 12 hrs<br>
 <br>
