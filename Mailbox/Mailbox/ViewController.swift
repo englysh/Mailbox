@@ -35,8 +35,13 @@ class ViewController: UIViewController {
     @IBOutlet weak var rescheduleImg: UIImageView!
     @IBOutlet weak var listImg: UIImageView!
     
+    
+    //needs to be put at root lvl in order to be called in the panning from edge function
+    var menuPanGesture: UIPanGestureRecognizer!
+    var originalInboxCenter: CGPoint!
+    
     @IBAction func onPanMsg(gestureRecognizer: UIPanGestureRecognizer) {
-
+        
         var location = gestureRecognizer.locationInView(view)
         var velocity = gestureRecognizer.velocityInView(view)
         var translation = gestureRecognizer.translationInView(view)
@@ -56,7 +61,7 @@ class ViewController: UIViewController {
             self.originalLaterIconCenter = laterIcon.center
             self.originalListIconCenter = listIcon.center
             self.originalDeleteIconCenter = deleteIcon.center
-            0
+            
             //gray: 214, 214, 214
             colorView.backgroundColor = UIColor(red: 214/255, green: 214/255, blue: 214/255, alpha: 1.0)
             
@@ -289,10 +294,85 @@ class ViewController: UIViewController {
         
         
     }
-    @IBAction func onEdgePan(gestureRecognizer: UIScreenEdgePanGestureRecognizer) {
+    
+    func onEdgePan(panGestureRecognizer: UIScreenEdgePanGestureRecognizer) {
+        
+        var point = panGestureRecognizer.locationInView(view)
+        var velocity = panGestureRecognizer.velocityInView(view)
+        var translation = panGestureRecognizer.translationInView(view)
         
         
-        println("from edge")
+        if panGestureRecognizer.state == UIGestureRecognizerState.Began {
+            println("Gesture began at: \(point)")
+            
+            self.originalInboxCenter = inboxView.center
+            
+            
+        } else if panGestureRecognizer.state == UIGestureRecognizerState.Changed {
+            println("Gesture changed at: \(point)")
+            scrollView.userInteractionEnabled = false
+            inboxView.center.x = self.originalInboxCenter.x + translation.x
+            
+        } else if panGestureRecognizer.state == UIGestureRecognizerState.Ended {
+            println("Gesture ended at: \(point)")
+            //inboxview does not reveal if not moving pass 1/3 or screen
+            if (translation.x < inboxView.frame.width/3){
+                UIView.animateWithDuration(0.2, animations: { () -> Void in
+                    self.inboxView.center.x = self.inboxView.frame.width/2
+                    self.scrollView.userInteractionEnabled = true
+
+                })
+            } else if (translation.x > inboxView.frame.width/3){
+                UIView.animateWithDuration(0.2, animations: { () -> Void in
+                    self.inboxView.center.x = 445
+                    self.menuPanGesture.enabled = true
+                    
+                })
+                
+            }
+        }
+    }
+    
+    func onMenuPan (panGestureRecognizer: UIPanGestureRecognizer){
+        var translation = panGestureRecognizer.translationInView(view)
+        
+        if (panGestureRecognizer.state == UIGestureRecognizerState.Began){
+            println("pan began")
+            self.originalInboxCenter = inboxView.center
+            
+        } else if (panGestureRecognizer.state == UIGestureRecognizerState.Changed){
+            
+            self.inboxView.center.x = self.originalInboxCenter.x + translation.x
+            
+            
+        } else if (panGestureRecognizer.state == UIGestureRecognizerState.Ended){
+            
+            if (-translation.x < inboxView.frame.width/3){
+                UIView.animateWithDuration(0.2, animations: { () -> Void in
+                    self.inboxView.center.x = 445
+                    
+                    //"dungent" still revealed so pangesture on inbox still active
+                    self.menuPanGesture.enabled = true
+                    //make sure inbox view still doesn't scroll
+                    self.scrollView.userInteractionEnabled = false
+
+
+                })
+
+            } else if (-translation.x > inboxView.frame.width/3){
+                
+                UIView.animateWithDuration(0.2, animations: { () -> Void in
+                    self.inboxView.center.x = self.inboxView.frame.width/2
+                    //now dongent is open so disable inbox panning to left and let it move on edgepan
+                    self.menuPanGesture.enabled = false
+                    self.scrollView.userInteractionEnabled = true
+
+                })
+
+            }
+            
+        }
+        
     }
     
     
@@ -300,13 +380,25 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
-        scrollView.contentSize = feedImg.image!.size
+        scrollView.contentSize = inboxView.frame.size
+        //scrollView.contentInset = UIEdgeInsets (top: 0, left: 0, bottom: 65+37+42+86, right: 0)
+        
+
         archiveIcon.alpha = 0
         laterIcon.alpha = 0
         listIcon.alpha = 0
         deleteIcon.alpha = 0
         rescheduleImg.alpha = 0
         listImg.alpha = 0
+        
+        var edgeGesture = UIScreenEdgePanGestureRecognizer(target: self, action: "onEdgePan:")
+        edgeGesture.edges = UIRectEdge.Left
+        inboxView.addGestureRecognizer(edgeGesture)
+        
+        menuPanGesture = UIPanGestureRecognizer(target: self, action: "onMenuPan:")
+        inboxView.addGestureRecognizer(menuPanGesture)
+        menuPanGesture.enabled = false
+        
     }
     
     override func didReceiveMemoryWarning() {
