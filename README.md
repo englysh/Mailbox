@@ -4,6 +4,7 @@ Mailbox, homwork submission WK3
 <img src="https://raw.githubusercontent.com/englysh/Mailbox/master/MailboxHW.gif" width:"322pt"; height:"581pt";>
 
 So far took about 12 hrs<br>
+09/22/2014 added another 4 hrs to make panning from edge to reveal hamburger menu work <br>
 <br>
 App includes, not including <strike>striked thru</strike> items<br>
 <br>
@@ -22,9 +23,9 @@ After 60 pts, the archive icon should start moving with the translation and the 
 Upon release, the message should continue to reveal the green background. When the animation it complete, it should hide the message.<br>
 After 260 pts, the icon should change to the delete icon and the background color should change to red.<br>
 Upon release, the message should continue to reveal the red background. When the animation it complete, it should hide the message.<br>
-<strike>Optional: Panning from the edge should reveal the menu<br>
+Optional: Panning from the edge should reveal the menu<br>
 Optional: If the menu is being revealed when the user lifts their finger, it should continue revealing.<br>
 Optional: If the menu is being hidden when the user lifts their finger, it should continue hiding.<br>
-Optional: Tapping on compose should animate to reveal the compose view.<br>
+<strike>Optional: Tapping on compose should animate to reveal the compose view.<br>
 Optional: Tapping the segmented control in the title should swipe views in from the left or right.<br>
 Optional: Shake to undo.</strike>
